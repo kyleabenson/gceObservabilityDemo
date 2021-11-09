@@ -47,6 +47,7 @@ resource "google_compute_instance_template" "default" {
     boot              = true
   }
 
+  metadata_startup_script = file("${path.module}/script.sh")
   network_interface {
     network = "default"
 

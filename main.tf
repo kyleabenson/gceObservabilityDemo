@@ -19,13 +19,28 @@ provider "google" {
   region      = var.gcp_region
 }
 
+// Data resources
+data "google_compute_default_service_account" "default" {
+}
 
-////
+// Variable Definitions 
+variable "gcp_project" {
+  description = "The GCP project to be used for this deployment"
+  type        = string
+}
+
+variable "gcp_region" {
+  description = "The region used for this deployment"
+  type        = string
+  default     = "us-central1"
+}
+
+//// Resource definitions
 resource "google_compute_instance_template" "default" {
   name        = "appserver-template"
   description = "This template is used to create app server instances."
 
-  tags = ["foo", "bar"]
+  tags = ["foo", "bar", "http-server"]
 
   labels = {
     environment = "dev"
@@ -60,8 +75,10 @@ resource "google_compute_instance_template" "default" {
     create_before_destroy = true
   }
   
-  tags = ["http-server"]
-
+  service_account {
+    email  = data.google_compute_default_service_account.default.email
+    scopes = ["cloud-platform"]
+  }
 
 }
 
@@ -70,16 +87,21 @@ data "google_compute_image" "my_image" {
   project = "debian-cloud"
 }
 
-resource "google_compute_disk" "foobar" {
-  name  = "existing-disk"
-  image = data.google_compute_image.my_image.self_link
-  size  = 10
-  type  = "pd-ssd"
-  zone  = "us-central1-a"
-}
+# resource "google_compute_disk" "foobar" {
+#   name  = "existing-disk"
+#   image = data.google_compute_image.my_image.self_link
+#   size  = 10
+#   type  = "pd-ssd"
+# }
 
-resource "google_project_services" "project_services" {
-  services   = var.api_endpoints
+resource "google_project_service" "monitoring_service" {
+  service   = "monitoring.googleapis.com"
+}
+resource "google_project_service" "logging_service" {
+  service   = "logging.googleapis.com"
+}
+resource "google_project_service" "osconfig_service" {
+  service   = "osconfig.googleapis.com"
 }
 
 resource "google_compute_region_instance_group_manager" "instance_group_manager" {
@@ -92,19 +114,40 @@ resource "google_compute_region_instance_group_manager" "instance_group_manager"
   }
 }
 
-variable "api_endpoints" {
-  description = "List of API endpoints that must be enabled to use the cloud ops agent"
-  type        = list(string)
-  default     = ["monitoring.googleapis.com", "logging.googleapis.com", "osconfig.googleapis.com"]
+
+resource "google_project_iam_binding" "monitoring_policy_binding" {
+  project = var.gcp_project
+  role    = "roles/monitoring.metricWriter"
+
+  members = [
+    "serviceAccount:${data.google_compute_default_service_account.default.email}"
+  ]
 }
 
-variable "gcp_project" {
-  description = "The GCP project to be used for this deployment"
-  type        = string
+resource "google_project_iam_binding" "logging_policy_binding" {
+  project = var.gcp_project
+  role    = "roles/logging.logWriter"
+
+  members = [
+    "serviceAccount:${data.google_compute_default_service_account.default.email}"
+  ]
 }
 
-variable "gcp_region" {
-  description = "The region used for this deployment"
-  type        = string
-  default     = "us-central1"
+resource "google_project_iam_binding" "osconfig_policy_binding" {
+  project = var.gcp_project
+  role    = "roles/osconfig.guestPolicyViewer"
+
+  members = [
+    "serviceAccount:${data.google_compute_default_service_account.default.email}"
+  ]
 }
+
+resource "google_compute_project_metadata" "default" {
+  metadata = {
+    enable-guest-attributes  = "TRUE"
+    enable-osconfig = "TRUE"
+  }
+}
+
+
+

@@ -63,6 +63,7 @@ resource "google_compute_instance_template" "default" {
   }
 
   metadata_startup_script = file("${path.module}/script.sh")
+  
   network_interface {
     network = "default"
 
@@ -87,12 +88,6 @@ data "google_compute_image" "my_image" {
   project = "debian-cloud"
 }
 
-# resource "google_compute_disk" "foobar" {
-#   name  = "existing-disk"
-#   image = data.google_compute_image.my_image.self_link
-#   size  = 10
-#   type  = "pd-ssd"
-# }
 
 resource "google_project_service" "monitoring_service" {
   service   = "monitoring.googleapis.com"

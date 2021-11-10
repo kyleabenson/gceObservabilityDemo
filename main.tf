@@ -60,9 +60,7 @@ resource "google_compute_instance_template" "default" {
     create_before_destroy = true
   }
   
-  metadata = {
-    foo = "bar"
-  }
+  tags = ["http-server"]
 
 
 }
@@ -80,15 +78,33 @@ resource "google_compute_disk" "foobar" {
   zone  = "us-central1-a"
 }
 
+resource "google_project_services" "project_services" {
+  services   = var.api_endpoints
+}
 
-
-resource "google_compute_instance_group_manager" "instance_group_manager" {
+resource "google_compute_region_instance_group_manager" "instance_group_manager" {
   name               = "instance-group-manager"
   base_instance_name = "instance-group-manager"
-  zone               = "us-central1-f"
   target_size        = "3"
   version {
     name = "test"
     instance_template  = google_compute_instance_template.default.id
   }
+}
+
+variable "api_endpoints" {
+  description = "List of API endpoints that must be enabled to use the cloud ops agent"
+  type        = list(string)
+  default     = ["monitoring.googleapis.com", "logging.googleapis.com", "osconfig.googleapis.com"]
+}
+
+variable "gcp_project" {
+  description = "The GCP project to be used for this deployment"
+  type        = string
+}
+
+variable "gcp_region" {
+  description = "The region used for this deployment"
+  type        = string
+  default     = "us-central1"
 }

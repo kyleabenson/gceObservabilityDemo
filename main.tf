@@ -23,7 +23,10 @@ provider "google" {
 data "google_compute_default_service_account" "default" {
 }
 
-// Variable Definitions 
+///
+/// Variable Definitions 
+///
+
 variable "gcp_project" {
   description = "The GCP project to be used for this deployment"
   type        = string
@@ -35,7 +38,9 @@ variable "gcp_region" {
   default     = "us-central1"
 }
 
-//// Resource definitions
+///
+/// Resource definitions
+///
 resource "google_compute_instance_template" "default" {
   name        = "appserver-template"
   description = "This template is used to create app server instances."
@@ -99,13 +104,17 @@ resource "google_project_service" "osconfig_service" {
   service   = "osconfig.googleapis.com"
 }
 
-resource "google_compute_region_instance_group_manager" "instance_group_manager" {
+resource "google_compute_region_instance_group_manager" "default" {
   name               = "instance-group-manager"
   base_instance_name = "instance-group-manager"
   target_size        = "3"
   version {
     name = "test"
     instance_template  = google_compute_instance_template.default.id
+  }
+  named_port {
+    name = "webapp"
+    port = 8080
   }
 }
 
@@ -144,5 +153,32 @@ resource "google_compute_project_metadata" "default" {
   }
 }
 
+///
+/// Create Load Balancer components
+///
 
+# resource "google_compute_region_backend_service" "default" {
+#   name          = "backend-service"
+#   health_checks = [google_compute_http_health_check.default.id]
+#   backend {
+#     group           = google_compute_region_instance_group_manager.instance_group_manager.id
+#   }
+# }
 
+# resource "google_compute_http_health_check" "default" {
+#   name               = "health-check"
+#   request_path       = "/"
+#   check_interval_sec = 1
+#   timeout_sec        = 1
+# }
+
+# resource "google_compute_subnetwork" "default" {
+#   name          = "lb-subnet"
+#   ip_cidr_range = "10.0.1.0/24"
+#   network       = google_compute_network.default.id
+# }
+
+# resource "google_compute_global_address" "default" {
+#   provider = google
+#   name = "lb-static-ip"
+# }

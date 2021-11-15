@@ -14,14 +14,14 @@
 
     - name: Template a file, using symbolic modes (equivalent to 0644)
       template:
-        src: /ansible_templates/status.conf
+        src: ansible_templates/status.conf
         dest: /etc/nginx/conf.d/status.conf
       notify:
         - Restart Nginx
 
     - name: Template a file, using symbolic modes (equivalent to 0644)
       template:
-        src: /ansible_templates/ops_agent_config.yaml
+        src: ansible_templates/ops_agent_config.yaml
         dest: /etc/google-cloud-ops-agent/config.yaml
       notify:
         - Restart Ops Agent

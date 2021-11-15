@@ -4,7 +4,7 @@ This is demo contains the following:
 
 Infra
 * A GCP network load balancer
-* A 3 GCE system frontend application (apache)
+* A 3 GCE system frontend application (nginx)
 <!-- * A 'backend' of objects stored in a GCP Storage bucket -->
 
 Monitoring

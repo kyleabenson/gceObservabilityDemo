@@ -1,51 +1,52 @@
 ---
-hosts: webservers
-become: true
-roles:
-  - role: googlecloudplatform.google_cloud_ops_agents
-    vars:
-      agent_type: ops-agent
-tasks:
-  - name: Install nginx
-    package: 
-      name: nginx
-      state: present
+- name: Deploy and configure Cloud Ops Agent
+  hosts: webservers
+  become: true
+  roles:
+    - role: googlecloudplatform.google_cloud_ops_agents
+      vars:
+        agent_type: ops-agent
+  tasks:
+    - name: Install nginx
+      package: 
+        name: nginx
+        state: present
 
-  - name: Template a file, using symbolic modes (equivalent to 0644)
-    template:
-      src: /ansible_templates/status.conf
-      dest: /etc/nginx/conf.d/status.conf
-    notify:
-      - Restart Nginx
+    - name: Template a file, using symbolic modes (equivalent to 0644)
+      template:
+        src: /ansible_templates/status.conf
+        dest: /etc/nginx/conf.d/status.conf
+      notify:
+        - Restart Nginx
 
-  - name: Template a file, using symbolic modes (equivalent to 0644)
-    template:
-      src: /ansible_templates/ops_agent_config.yaml
-      dest: /etc/google-cloud-ops-agent/config.yaml
-    notify:
-      - Restart Ops Agent
+    - name: Template a file, using symbolic modes (equivalent to 0644)
+      template:
+        src: /ansible_templates/ops_agent_config.yaml
+        dest: /etc/google-cloud-ops-agent/config.yaml
+      notify:
+        - Restart Ops Agent
 
-  - name: Start nginx
-    service:
-      name: nginx
-      state: started
-      enabled: yes
+    - name: Start nginx
+      service:
+        name: nginx
+        state: started
+        enabled: yes
 
-  - name: Start Ops Agent
-    service:
-      name: google-cloud-ops-agent
-      state: started
-      enabled: yes
-      
-handlers:
-  - name: Restart Nginx
-    service:
-      name: nginx
-      state: restarted
-      enabled: yes
+    - name: Start Ops Agent
+      service:
+        name: google-cloud-ops-agent
+        state: started
+        enabled: yes
+        
+  handlers:
+    - name: Restart Nginx
+      service:
+        name: nginx
+        state: restarted
+        enabled: yes
 
-  - name: Restart Ops Agent
-    service:
-      name: google-cloud-ops-agent
-      state: restarted
-      enabled: yes
+    - name: Restart Ops Agent
+      service:
+        name: google-cloud-ops-agent
+        state: restarted
+        enabled: yes

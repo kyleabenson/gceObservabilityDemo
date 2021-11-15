@@ -1,6 +1,6 @@
 ---
 - name: Deploy and configure Cloud Ops Agent
-  hosts: webservers
+  hosts: all
   become: true
   roles:
     - role: googlecloudplatform.google_cloud_ops_agents

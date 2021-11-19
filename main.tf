@@ -22,7 +22,9 @@ provider "google" {
 // Data resources
 data "google_compute_default_service_account" "default" {
 }
-
+data "google_compute_subnetwork" "default-subnetwork" {
+  name = "default"
+}
 ///
 /// Variable Definitions 
 ///
@@ -39,7 +41,7 @@ variable "gcp_region" {
 }
 
 ///
-/// Resource definitions
+/// Compute resource definitions
 ///
 resource "google_compute_instance_template" "default" {
   name        = "appserver-template"
@@ -74,7 +76,9 @@ resource "google_compute_instance_template" "default" {
 
     access_config {
      // Include this section to give the VM an external ip address
+     network_tier = "PREMIUM"
    }
+   subnetwork = data.google_compute_subnetwork.default-subnetwork.self_link
   }
 
   lifecycle {
@@ -92,6 +96,23 @@ data "google_compute_image" "my_image" {
   family  = "debian-9"
   project = "debian-cloud"
 }
+
+resource "google_compute_firewall" "rules" {
+  name        = "default-allow-http"
+  network     = "default"
+  description = "Creates firewall rule targeting tagged instances"
+  priority    = 1000
+  allow {
+    protocol  = "tcp"
+    ports     = ["80"]
+  }
+  source_ranges = ["0.0.0.0/0"]
+  target_tags = ["http-server"]
+}
+
+///
+/// API & IAM Policies for Cloud Ops Agent
+///
 
 
 resource "google_project_service" "monitoring_service" {
@@ -113,8 +134,8 @@ resource "google_compute_region_instance_group_manager" "default" {
     instance_template  = google_compute_instance_template.default.id
   }
   named_port {
-    name = "webapp"
-    port = 8080
+    name = "http"
+    port = 80
   }
 }
 
@@ -153,6 +174,10 @@ resource "google_compute_project_metadata" "default" {
   }
 }
 
+
+
+
+
 ///
 /// Create Load Balancer components
 ///
@@ -181,4 +206,20 @@ resource "google_compute_project_metadata" "default" {
 # resource "google_compute_global_address" "default" {
 #   provider = google
 #   name = "lb-static-ip"
+# }
+
+///
+/// Create Logging and Monitoring Components
+///
+# data "http" "nginx_dash" {
+#   url = "https://cloud-monitoring-dashboards.googleusercontent.com/samples/nginx/overview.json"
+
+#   # Optional request headers
+#   request_headers = {
+#     Accept = "application/json"
+#   }
+# }
+
+# resource "google_monitoring_dashboard" "dashboard" {
+#   dashboard_json = data.http.nginx_dash.body
 # }

@@ -111,20 +111,6 @@ resource "google_compute_firewall" "rules" {
 }
 
 
-resource "google_compute_region_instance_group_manager" "default" {
-  name               = "instance-group-manager"
-  base_instance_name = "instance-group-manager"
-  target_size        = "3"
-  version {
-    name = "test"
-    instance_template  = google_compute_instance_template.default.id
-  }
-  named_port {
-    name = "http"
-    port = 80
-  }
-}
-
 ///
 /// API & IAM Policies for Cloud Ops Agent
 ///

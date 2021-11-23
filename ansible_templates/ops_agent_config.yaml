@@ -1,23 +1,23 @@
 logging:
   receivers:
-    nginx_default_access:
-      type: nginx_access
-    nginx_default_error:
-      type: nginx_error
+    apache_access:
+      type: apache_access
+    apache_error:
+      type: apache_error
   service:
     pipelines:
-      nginx:
+      apache:
         receivers:
-          - nginx_default_access
-          - nginx_default_error
+        - apache_access
+        - apache_error
 metrics:
   receivers:
-    nginx_metrics:
-      type: nginx
-      stub_status_url: http://127.0.0.1:80/status
-      collection_interval: 60s
+    apache:
+      type: apache
+      server_status_url: http://localhost:8080/server-status?auto
+      collection_interval: 30s
   service:
     pipelines:
-      nginx_pipeline:
+      apache:
         receivers:
-          - nginx_metrics
+        - apache

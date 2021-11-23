@@ -110,6 +110,19 @@ resource "google_compute_firewall" "rules" {
   target_tags = ["http-server"]
 }
 
+resource "google_compute_region_instance_group_manager" "default" {
+  name               = "instance-group-manager"
+  base_instance_name = "instance-group-manager"
+  target_size        = "3"
+  version {
+    name = "test"
+    instance_template  = google_compute_instance_template.default.id
+  }
+  named_port {
+    name = "http"
+    port = 80
+  }
+}
 
 ///
 /// API & IAM Policies for Cloud Ops Agent
@@ -162,9 +175,6 @@ resource "google_compute_project_metadata" "default" {
 }
 
 
-
-
-
 ///
 /// Create Load Balancer components
 ///
@@ -206,18 +216,5 @@ resource "google_compute_global_forwarding_rule" "default" {
   ip_address = google_compute_global_address.default.address
   port_range = "80"
 }
-///
-/// Create Logging and Monitoring Components
-///
-# data "http" "nginx_dash" {
-#   url = "https://cloud-monitoring-dashboards.googleusercontent.com/samples/nginx/overview.json"
 
-#   # Optional request headers
-#   request_headers = {
-#     Accept = "application/json"
-#   }
-# }
 
-# resource "google_monitoring_dashboard" "dashboard" {
-#   dashboard_json = data.http.nginx_dash.body
-# }

@@ -1,5 +1,5 @@
 ---
-- name: Deploy and configure Cloud Ops Agent
+- name: Deploy and configure Cloud Ops Agent to collect Apache signals
   hosts: localhost
   become: true
   roles:
@@ -7,7 +7,7 @@
       vars:
         agent_type: ops-agent
         version: latest
-        main_config_file: ansible_templates/ops_agent_config.yaml
+        main_config_file: ansible_templates/ops_agent_apache_config.yaml
       notify:
         - Restart Ops Agent
 
@@ -38,6 +38,18 @@
         name: google-cloud-ops-agent
         state: started
         enabled: yes
+    
+    - name: Run a cron job every 5 minutes to generate CPU load using sysbench
+      cron:
+        name: "5 minute CPU load"
+        minute: "*/5"
+        job: "sysbench cpu run"
+
+    - name: Generate localhost webtraffic every 3 minutes 
+      cron:
+        name: "3 minute web traffic load"
+        minute: "*/3"
+        job: "timeout 120 bash -c -- 'while true; do curl localhost; sleep $((RANDOM % 4)) ; done'"
         
   handlers:
     - name: Restart httpd

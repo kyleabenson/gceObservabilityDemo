@@ -1,13 +1,13 @@
 #!/bin/bash
 # This script installes httpd on the system, then adds the Cloud Ops agent
-sudo yum update -y
-sudo yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm -y
-sudo yum install git ansible-core -y
+dnf -y install epel-release epel-next-release
+dnf -y update
+dnf -y install git ansible-core
 
 git clone https://github.com/kyleabenson/gceObservabilityDemo.git
 pushd gceObservabilityDemo
 ansible-galaxy install googlecloudplatform.google_cloud_ops_agents -p .
-ansible-playbook playbook.yaml -i 
+ansible-playbook playbook.yaml
 
 NAME=$(curl -H "Metadata-Flavor: Google" "http://metadata.google.internal/computeMetadata/v1/instance/hostname")
 IP=$(curl -H "Metadata-Flavor: Google" "http://metadata.google.internal/computeMetadata/v1/instance/network-interfaces/0/ip")

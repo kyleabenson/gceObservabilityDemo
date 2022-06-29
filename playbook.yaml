@@ -1,34 +1,35 @@
 ---
 - name: Deploy and configure Cloud Ops Agent
-  hosts: all
+  hosts: localhost
   become: true
   roles:
     - role: googlecloudplatform.google_cloud_ops_agents
       vars:
         agent_type: ops-agent
+        version: latest
+        main_config_file: ansible_templates/ops_agent_config.yaml
+      notify:
+        - Restart Ops Agent
+
   tasks:
-    - name: Install nginx
+    - name: Install httpd and performance tools
       package: 
-        name: nginx
+        name: 
+         - httpd
+         - sysbench
+         - jq
         state: present
 
     - name: Template a file, using symbolic modes (equivalent to 0644)
       template:
-        src: ansible_templates/status.conf
-        dest: /etc/nginx/conf.d/status.conf
+        src: ansible_templates/httpd.conf
+        dest: /etc/httpd/conf/httpd.conf
       notify:
-        - Restart Nginx
+        - Restart httpd
 
-    - name: Template a file, using symbolic modes (equivalent to 0644)
-      template:
-        src: ansible_templates/ops_agent_config.yaml
-        dest: /etc/google-cloud-ops-agent/config.yaml
-      notify:
-        - Restart Ops Agent
-
-    - name: Start nginx
+    - name: Start httpd
       service:
-        name: nginx
+        name: httpd
         state: started
         enabled: yes
 
@@ -39,9 +40,9 @@
         enabled: yes
         
   handlers:
-    - name: Restart Nginx
+    - name: Restart httpd
       service:
-        name: nginx
+        name: httpd
         state: restarted
         enabled: yes
 

@@ -1,7 +1,10 @@
 #!/bin/bash
 # This script installes httpd on the system, then adds the Cloud Ops agent
-sudo apt-get update -y
-apt-get install -y apache2 jq
+sudo yum update -y
+sudo yum install epel-release -y
+sudo yum install ansible -y
+
+ansible-playbook playbook.yaml -i 
 
 NAME=$(curl -H "Metadata-Flavor: Google" "http://metadata.google.internal/computeMetadata/v1/instance/hostname")
 IP=$(curl -H "Metadata-Flavor: Google" "http://metadata.google.internal/computeMetadata/v1/instance/network-interfaces/0/ip")
@@ -14,10 +17,4 @@ Metadata: $METADATA
 </pre>
 EOF
 
-cat <<EOF >> /etc/httpd/conf/httpd.conf
-<Location "/server-status">
-    SetHandler server-status
-    Require host example.com
-</Location>
-EOF
-sudo systemctl start apache2
+

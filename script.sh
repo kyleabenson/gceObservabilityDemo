@@ -6,7 +6,7 @@ apt install git -y
 git clone https://github.com/kyleabenson/gceObservabilityDemo.git
 cd gceObservabilityDemo
 ansible-galaxy install googlecloudplatform.google_cloud_ops_agents -p .
-ansible-playbook playbook.yaml
+ansible-playbook playbook.yaml -i localhost
 
 NAME=$(curl -H "Metadata-Flavor: Google" "http://metadata.google.internal/computeMetadata/v1/instance/hostname")
 IP=$(curl -H "Metadata-Flavor: Google" "http://metadata.google.internal/computeMetadata/v1/instance/network-interfaces/0/ip")

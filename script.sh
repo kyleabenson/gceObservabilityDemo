@@ -2,7 +2,7 @@
 # This script installes httpd on the system, then adds the Cloud Ops agent
 sudo yum update -y
 sudo yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm -y
-sudo yum install epel-release git ansible-core -y
+sudo yum install git ansible-core -y
 
 git clone https://github.com/kyleabenson/gceObservabilityDemo.git
 pushd gceObservabilityDemo

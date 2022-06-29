@@ -64,7 +64,7 @@ resource "google_compute_instance_template" "default" {
 
   // Create a new boot disk from an image
   disk {
-    source_image      = "debian-cloud/debian-9"
+    source_image      = "projects/rocky-linux-cloud/global/images/rocky-linux-8-v20220621"
     auto_delete       = true
     boot              = true
   }
@@ -93,8 +93,8 @@ resource "google_compute_instance_template" "default" {
 }
 
 data "google_compute_image" "my_image" {
-  family  = "debian-9"
-  project = "debian-cloud"
+  family  = "rocky-linux-8"
+  project = "rocky-linux-cloud"
 }
 
 resource "google_compute_firewall" "rules" {

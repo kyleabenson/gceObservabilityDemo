@@ -1,7 +1,6 @@
 #!/bin/bash
 # This script installes httpd on the system, then adds the Cloud Ops agent
-python3 -m pip install --user ansible
-apt install git -y
+apt install git ansible -y
 
 git clone https://github.com/kyleabenson/gceObservabilityDemo.git
 cd gceObservabilityDemo

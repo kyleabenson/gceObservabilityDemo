@@ -98,7 +98,7 @@ data "google_compute_image" "my_image" {
 }
 
 resource "google_compute_firewall" "rules" {
-  name        = "default-allow-http"
+  name        = "allow-http"
   network     = "default"
   description = "Creates firewall rule targeting tagged instances"
   priority    = 1000

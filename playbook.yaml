@@ -22,7 +22,7 @@
 
     - name: Template a file, using symbolic modes (equivalent to 0644)
       template:
-        src: ansible_templates/httpd.conf
+        src: ansible_templates/apache2.conf
         dest: /etc/apache2/apache2.conf
       notify:
         - Restart httpd

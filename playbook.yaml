@@ -15,7 +15,7 @@
     - name: Install httpd and performance tools
       package: 
         name: 
-         - httpd
+         - apache2
          - sysbench
          - jq
         state: present
@@ -23,7 +23,7 @@
     - name: Template a file, using symbolic modes (equivalent to 0644)
       template:
         src: ansible_templates/httpd.conf
-        dest: /etc/httpd/conf/httpd.conf
+        dest: /etc/apache2/apache.conf
       notify:
         - Restart httpd
 

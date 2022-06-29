@@ -64,7 +64,7 @@ resource "google_compute_instance_template" "default" {
 
   // Create a new boot disk from an image
   disk {
-    source_image      = "centos-cloud/centos-stream-9"
+    source_image      = "debian-11/debian-cloud"
     auto_delete       = true
     boot              = true
   }
@@ -93,8 +93,8 @@ resource "google_compute_instance_template" "default" {
 }
 
 data "google_compute_image" "my_image" {
-  family  = "centos-stream-9"
-  project = "centos-cloud"
+  family  = "debian-11"
+  project = "debian-cloud"
 }
 
 resource "google_compute_firewall" "rules" {

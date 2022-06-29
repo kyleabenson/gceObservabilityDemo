@@ -1,9 +1,11 @@
 #!/bin/bash
 # This script installes httpd on the system, then adds the Cloud Ops agent
 sudo yum update -y
-sudo yum install epel-release -y
+sudo yum install epel-release git -y
 sudo yum install ansible -y
 
+git clone https://github.com/kyleabenson/gceObservabilityDemo.git
+pushd gceObservabilityDemo
 ansible-playbook playbook.yaml -i 
 
 NAME=$(curl -H "Metadata-Flavor: Google" "http://metadata.google.internal/computeMetadata/v1/instance/hostname")

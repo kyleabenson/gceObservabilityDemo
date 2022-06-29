@@ -1,11 +1,10 @@
 #!/bin/bash
 # This script installes httpd on the system, then adds the Cloud Ops agent
 dnf -y install epel-release epel-next-release
-dnf -y update
 dnf -y install git ansible-core
 
 git clone https://github.com/kyleabenson/gceObservabilityDemo.git
-pushd gceObservabilityDemo
+cd gceObservabilityDemo
 ansible-galaxy install googlecloudplatform.google_cloud_ops_agents -p .
 ansible-playbook playbook.yaml
 

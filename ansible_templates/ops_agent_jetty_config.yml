@@ -1,0 +1,18 @@
+metrics:
+  receivers:
+    jetty_metrics:
+      type: jetty
+  service:
+    pipelines:
+      jetty_pipeline:
+        receivers:
+          - jetty_metrics
+logging:
+  receivers:
+    jetty_access:
+      type: jetty_access
+  service:
+    pipelines:
+      jetty:
+        receivers:
+          - jetty_access
